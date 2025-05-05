@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>LULC Web Map</title>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+  <style>
+    #map { height: 100vh; width: 100%; }
+  </style>
+</head>
+<body>
+  <div id="map"></div>
+  <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+  <script src="lulc.geojson"></script> <!-- Your LULC file -->
+  <script>
+    var map = L.map('map').setView([10.2, -1.5], 8); // Adjust center/zoom
+
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      maxZoom: 19
+    }).addTo(map);
+
+    // Load LULC GeoJSON
+    fetch('lulc.geojson')
+      .then(res => res.json())
+      .then(data => {
+        L.geoJSON(data, {
+          style: function(feature) {
+            return {color: '#006400', weight: 1, fillOpacity: 0.6};
+          },
+          onEachFeature: function (feature, layer) {
+            layer.bindPopup("Class: " + feature.properties.gridcode);
+          }
+        }).addTo(map);
+      });
+  </script>
+</body>
+</html>
